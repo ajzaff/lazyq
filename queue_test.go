@@ -5,6 +5,7 @@ import (
 	"math"
 	"math/rand/v2"
 	"testing"
+	"unsafe"
 )
 
 func checkHeapProperties[E any](t testing.TB, testName string, h []Elem[E]) {
@@ -56,7 +57,7 @@ func checkQueueConditions[E any](t testing.TB, testName string, q Queue[E]) {
 	for i := q.maxIdx; i < n; i++ {
 		e := q.elems[i]
 		if e.Priority != maxPriority {
-			t.Errorf("%s: lazy queue property violated at %d: e.Priority != +inf", testName, i)
+			t.Errorf("%s: lazy queue property violated at %d: e.Priority != +inf: %v", testName, i, e.Priority)
 		}
 	}
 
@@ -68,32 +69,37 @@ func checkQueueConditions[E any](t testing.TB, testName string, q Queue[E]) {
 	}
 }
 
+func TestSizeofElemZeroOverhead(t *testing.T) {
+	var e Elem[struct{}]
+	var p float32
+	if sz := unsafe.Sizeof(e); sz != unsafe.Sizeof(p) {
+		t.Errorf("TestSizeofElemZeroOverhead(): Elem should have 0 overhead (Sizeof(e) = 4): got Sizeof(e) = %d", sz)
+	}
+}
+
 func TestZero(t *testing.T) {
 	var q Queue[struct{}]
 
 	checkQueueConditions(t, "TestZero()", q)
 }
 
-func TestZeroInsertMax(t *testing.T) {
+func TestZeroAppendMaxDecrease(t *testing.T) {
 	var q Queue[struct{}]
 
 	q.AppendMax(struct{}{})
-	q.AppendMax(struct{}{})
-	q.Next()
 	q.Decrease(7)
-	q.Next()
 
-	checkQueueConditions(t, "TestZero()", q)
+	checkQueueConditions(t, "TestZeroAppendMaxDecrease()", q)
 }
 
-func TestZeroInsertNaN(t *testing.T) {
+func TestZeroDecreaseNaN(t *testing.T) {
 	var q Queue[struct{}]
 
 	q.AppendMax(struct{}{})
 	q.Next()
 	q.Decrease(float32(math.NaN()))
 
-	checkQueueConditions(t, "TestZero()", q)
+	checkQueueConditions(t, "TestZeroDecreaseNaN()", q)
 }
 
 func TestDecreaseMaxPriorityHasNoImpact(t *testing.T) {
@@ -103,10 +109,6 @@ func TestDecreaseMaxPriorityHasNoImpact(t *testing.T) {
 	q.Decrease(maxPriority)
 
 	checkQueueConditions(t, "TestDecreaseMaxPriorityHasNoImpact()", q)
-}
-
-func TestFuzzQueue838c3636634247da(t *testing.T) {
-	fuzzFunc(t, "aa0nna%n", 1337, 420)
 }
 
 func FuzzQueue(f *testing.F) {

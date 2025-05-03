@@ -21,6 +21,8 @@ type Elem[E any] struct {
 // items are always added with the max priority, and the task list grows
 // monotomically in size, and only the top element's priority can be changed.
 //
+// NB: The queue is more performant when elements are written more often than they are read.
+//
 // See the additional methods in this package to support out of band updates
 // to the queue.
 //

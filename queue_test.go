@@ -119,8 +119,8 @@ func FuzzQueue(f *testing.F) {
 	f.Fuzz(fuzzFunc)
 }
 
-func randomPriority(t *testing.T, r *rand.Rand) float32 {
-	t.Helper()
+func randomPriority(tb testing.TB, r *rand.Rand) float32 {
+	tb.Helper()
 	switch r.IntN(7) {
 	case 0:
 		return -maxPriority

@@ -54,3 +54,18 @@ func ElementIndices[E any](q Queue[E]) iter.Seq2[int, Elem[E]] {
 		}
 	}
 }
+
+// HasMaxElems returns true when q has at least one element in the max slice.
+func HasMaxElems[E any](q Queue[E]) bool { return q.hasMaxElements() }
+
+// First returns the first element (not the top element) ignoring any max slice elements.
+func First[E any](q Queue[E]) E { return q.elems[0].E }
+
+// First returns the first max element of q.
+func FirstMaxElem[E any](q Queue[E]) E { return q.elems[q.maxIdx].E }
+
+// At returns the element at i, possibly a max slice element.
+func At[E any](q Queue[E], i int) E { return q.elems[i].E }
+
+// ReplacePayload replaces the element payload at index i with e.
+func ReplacePayload[E any](q Queue[E], i int, e E) { q.elems[i].E = e }

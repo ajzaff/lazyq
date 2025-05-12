@@ -6,7 +6,6 @@ import (
 )
 
 // These extra operations on queues are provided for special interactions.
-// TODO: Add extra mutation methods here.
 
 // Clone creates a new queue by cloning the backing slices.
 func Clone[E any](q Queue[E]) Queue[E] {
@@ -57,6 +56,9 @@ func ElementIndices[E any](q Queue[E]) iter.Seq2[int, Elem[E]] {
 
 // HasMaxElems returns true when q has at least one element in the max slice.
 func HasMaxElems[E any](q Queue[E]) bool { return q.hasMaxElements() }
+
+// MaxIndex returns the index of the max element or [Len].
+func MaxIndex[E any](q Queue[E]) int { return q.maxIdx }
 
 // First returns the first element (not the top element) ignoring any max slice elements.
 func First[E any](q Queue[E]) E { return q.elems[0].E }

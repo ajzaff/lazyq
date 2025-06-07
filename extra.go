@@ -71,3 +71,6 @@ func At[E any](q Queue[E], i int) E { return q.elems[i].E }
 
 // ReplacePayload replaces the element payload at index i with e.
 func ReplacePayload[E any](q Queue[E], i int, e E) { q.elems[i].E = e }
+
+// Grow q to ensure space for another n elements without allocating.
+func Grow[E any](q *Queue[E], n int) { q.elems = slices.Grow(q.elems, n) }
